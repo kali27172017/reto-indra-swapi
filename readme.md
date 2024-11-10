@@ -13,10 +13,11 @@ npm test
 
 # Deploy de mis Lambda
 # serverless offline start --reloadHandler  (Local)
-# GET  | http://localhost:3000/dev/api/v1/planets 
-# GET  | http://localhost:3000/dev/api/v1/planets/{id}  
-# POST | http://localhost:3000/dev/api/v1/planets  (Inserta la data consumida de la api de Swapi)
-# GET  | http://localhost:3000/dev/swagger-ui   (Documentacion)
+# GET  | http://localhost:3000/api/v1/planets 
+# GET  | http://localhost:3000/api/v1/planets/{id}  
+# POST | http://localhost:3000/api/v1/planets  (Inserta la data consumida de la api de Swapi)
+# GET  | http://localhost:3000/api/swagger-ui   (Documentacion si queremos visualizarla en local cambiamos esta url https://levxjpccd0.execute-api.us-east-1.amazonaws.com/api/openapi/openapi.json por esta http://localhost:3000/api/openapi/openapi.json 
+# en el archivo /openapi(openapi.json))  
 
 
 # sls deploy (Produccion)
