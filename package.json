@@ -1,0 +1,25 @@
+{
+  "name": "reto-indra-swapi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.687.0",
+    "@aws-sdk/lib-dynamodb": "^3.687.0",
+    "@aws-sdk/util-dynamodb": "^3.687.0",
+    "jest": "^29.7.0",
+    "serverless": "^4.4.7",
+    "serverless-offline": "^14.3.4",
+    "serverless-openapi-documenter": "^0.0.109"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "swagger-ui-dist": "^5.18.2"
+  }
+}

@@ -1,0 +1,211 @@
+service: api-swapi
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'api'}
+  environment:
+    API_URL_SWAPI: "https://swapi.py4e.com/api/planets/"
+    TABLE_DYNAMODB: "planetsdb"
+  deploymentPrefix: 'api'
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'dynamodb:*'
+          Resource: arn:aws:dynamodb:us-east-1:021364180784:table/planetsdb
+
+plugins:
+  - serverless-offline
+  - serverless-openapi-documenter
+
+package:
+  individually: true
+  patterns:
+    - "!node_modules/**"
+    - "!*.md"
+    - "!**/*.log"
+    - node_modules/**
+
+custom:
+  documentation:
+    api:
+      name: 'API de Planetas'
+      description: 'API para gestionar planetas'
+      version: '1.0.0'
+    models:
+      - name: Planet
+        contentType: 'application/json'
+        schema:
+          type: object
+          properties:
+            diametro:
+              type: string
+              description: 'El diámetro del planeta'
+            nombre:
+              type: string
+              description: 'El nombre del planeta'
+            agua_superficial:
+              type: string
+              description: 'Porcentaje de agua en la superficie del planeta'
+            clima:
+              type: string
+              description: 'El clima del planeta'
+            residentes:
+              type: array
+              items:
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                    description: 'Nombre del residente'
+                  genero:
+                    type: string
+                    description: 'Género del residente'
+            poblacion:
+              type: string
+              description: 'Población total del planeta'
+            periodo_orbital:
+              type: string
+              description: 'Periodo orbital del planeta (en días)'
+            peliculas:
+              type: array
+              items:
+                type: object
+                properties:
+                  titulo:
+                    type: string
+                    description: 'Título de la película'
+                  director:
+                    type: string
+                    description: 'Director de la película'
+            periodo_rotacion:
+              type: string
+              description: 'Periodo de rotación del planeta (en horas)'
+            gravedad:
+              type: string
+              description: 'Gravedad del planeta'
+            creado:
+              type: string
+              description: 'Fecha de creación del planeta'
+            id:
+              type: string
+              description: 'ID único del planeta'
+            terreno:
+              type: string
+              description: 'Tipos de terreno del planeta'
+
+      - name: Error
+        contentType: 'application/json'
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              description: 'Mensaje de error'
+            code:
+              type: string
+              description: 'Código de error'
+
+  serverless-offline:
+    stage: ${opt:stage, 'api'}
+
+functions:
+  get-planets:
+    handler: getswapi/handler.getPlanets
+    events:
+      - http:
+          path: v1/planets
+          method: GET
+          cors: true
+          documentation:
+            summary: 'Obtiene todos los planetas'
+            description: 'Devuelve una lista de todos los planetas disponibles en el SWAPI.'
+            responses:
+              200:
+                description: 'Lista de planetas obtenida exitosamente'
+                bodyType: Planet
+              4XX:
+                description: 'Error en la solicitud (por ejemplo, 404)'
+                bodyType: Error
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  application/json: Planet
+              - statusCode: 4XX
+                responseModels:
+                  application/json: Error
+
+  get-planet:
+    handler: getswapi/handler.getPlanet
+    events:
+      - http:
+          path: v1/planets/{id}
+          method: GET
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+          documentation:
+            summary: 'Obtiene un planeta por ID'
+            description: 'Devuelve los detalles de un planeta por su ID.'
+            pathParams:
+              - name: id
+                description: 'El ID único del planeta'
+                required: true
+                schema:
+                  type: string
+            responses:
+              200:
+                description: 'Planeta encontrado'
+                bodyType: Planet
+              404:
+                description: 'Planeta no encontrado'
+                bodyType: Error
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  application/json: Planet
+              - statusCode: 404
+                responseModels:
+                  application/json: Error
+
+  create-planets:
+    handler: postswapi/handler.createPlanets
+    events:
+      - http:
+          path: v1/planets
+          method: POST
+          cors: true
+          documentation:
+            summary: 'Crea un nuevo planeta'
+            description: 'Crea un nuevo planeta en la base de datos.'
+            responses:
+              201:
+                description: 'Planeta creado exitosamente'
+                bodyType: Planet
+              400:
+                description: 'Solicitud incorrecta'
+                bodyType: Error
+            methodResponses:
+              - statusCode: 201
+                responseModels:
+                  application/json: Planet
+              - statusCode: 400
+                responseModels:
+                  application/json: Error
+  openapi:
+    handler: openapi/openapi.handler
+    events:
+      - http:
+          path: openapi/openapi.json
+          method: get
+          cors: true
+  swaggerUI:
+    handler: openapi/swaggerUI.handler
+    events:
+      - http:
+          path: swagger-ui
+          method: get
+          cors: true
